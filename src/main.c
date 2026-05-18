@@ -1,5 +1,32 @@
 #include <stdio.h>
 
+void returnBook(){
+    char user_id[50];
+    char book_id[50];
+    char return_date[50];
+    int late_fee = 0;
+
+    printf("=== 書籍の返却 ===\n");
+    
+    printf("ユーザーIDを入力してください: ");
+    scanf("%s", user_id);
+    printf("書籍IDを入力してください: ");
+    scanf("%s", book_id);
+    printf("返却日を入力してください (YYYY-MM-DD): ");
+    scanf("%s", return_date);
+    printf("遅延料金がある場合は入力してください (ない場合は0): ");
+    scanf("%d", &late_fee); 
+    FILE *fp = fopen("data/return_history.csv", "a");// 返却履歴をCSVファイルに保存
+
+    if (fp == NULL )// ファイルが開けない場合のエラーハンドリング
+    {
+        printf("CSVファイルを開くことができませんでした。\n");
+        return;
+    }
+    fprintf(fp, "%s,%s,%s,%d\n", user_id, book_id, return_date, late_fee);// CSVファイルに返却情報を書き込む
+    fclose(fp);
+    printf("書籍の返却が完了しました。\n");
+}
 void save_history(
     char status[],
     char user_id[],
@@ -71,7 +98,7 @@ int main() {
                 save_history("貸出", "ユーザーID", "書籍ID", "貸出日", "返却予定日", "返却日"); // 例としてユーザーIDと書籍IDを固定値で保存
         } else if(choice == 2) {
                 printf("書籍返却が選択されました。\n");
-                save_history("返却", "ユーザーID", "書籍ID", "貸出日", "返却予定日", "返却日"); // 例としてユーザーIDと書籍IDを固定値で保存
+                returnBook(); // 書籍返却処理を呼び出す
         } else if(choice == 3) {
                 printf("履歴が選択されました。\n");
                 load_history();
