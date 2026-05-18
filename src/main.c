@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "returnBook.c"
 
 void save_history(
     char status[],
