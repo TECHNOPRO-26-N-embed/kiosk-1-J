@@ -12,18 +12,20 @@ char user[][3][50] = {
 
 void check_user_id(char user_id[]) {
     //ユーザーID確認画面
-    printf("ユーザーIDを入力してください\n");
-    //ユーザーID取得
-    scanf("%s",user_id);
+    while (1){
+        printf("ユーザーIDを入力してください\n");
+        //ユーザーID取得
+        scanf("%s",user_id);
 
-    for(int i = 0; i < 5; i++){
-        if(strcmp(user_id, user[i][0]) == 0){
-            printf("ユーザーIDが確認されました。ようこそ、%sさん！\n", user[i][1]);
-            return ;
+        for(int i = 0; i < 5; i++){
+            if(strcmp(user_id, user[i][0]) == 0){
+                printf("ユーザーIDが確認されました。ようこそ、%sさん！\n", user[i][1]);
+                return ;
+            }
         }
+        printf("ユーザーIDが見つかりませんでした。もう一度入力してください。\n");
+        strcpy(user_id, ""); // ユーザーIDを空にして再入力を促す
     }
-    printf("ユーザーIDが見つかりませんでした。もう一度入力してください。\n");
-    strcpy(user_id, ""); // ユーザーIDを空にして再入力を促す
 }
 
 int calculate(char due_date[], char return_date[]) {
@@ -103,6 +105,7 @@ void get_due_date(char due_date[]) {
         due_date_tm->tm_mday + 7); // 例として7日後を返却予定日に設定
 }
 
+
 int main() {
     int choice;
     char user_id[10];
@@ -111,11 +114,8 @@ int main() {
     char due_date[20];
     char return_date[20];
 
-    check_user_id(user_id);
-
-    if(strcmp(user_id, "") == 0) {
-        return 0; // ユーザーIDが確認されなかった場合、プログラムを終了
-    }
+    while (1){
+        check_user_id(user_id);
 
     while (1){
         printf("\n==============================\n");
@@ -165,6 +165,6 @@ int main() {
                 printf("無効な選択です。もう一度入力してください。\n");
         }
     }
-    
+}
     return 0;
 }
