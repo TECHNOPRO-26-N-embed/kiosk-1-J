@@ -1,73 +1,57 @@
 #include <stdio.h>
 #include <string.h>
-#include <time.h>
 
-typedef struct {
+#define MAX_BOOKS 100
+
+extern int is_borrowed[MAX_BOOKS];
+extern int book_count;
+extern char registered_book_ids[MAX_BOOKS][20];
+extern char borrowed_rent_dates[MAX_BOOKS][20];
+extern char borrowed_due_dates[MAX_BOOKS][20];
+
+int find_book_index(char input_id[]);
+void get_date(char date[]);
+void get_due_date(char due_date[]);
+void save_history(
+    char status[],
+    char user_id[],
+    char book_id[],
+    char rent_date[],
+    char due_date[],
+    char return_date[]
+);
+
+void process_checkout(char user_id[]) {
     char book_id[20];
-    char book_title[100];
-    int is_borrowed;
-    char user_id[20];
     char rent_date[20];
     char due_date[20];
-} Book;
+    int target_index;
 
-extern Book library[100];
-extern int book_count;
-
-void save_history(char status[], char user_id[], char book_id[], char rent_date[], char due_date[], char return_date[]);
-
-void process_checkout(const char* user_id) {
-    char input_book_id[20];
-    int book_index = -1;
+    if (book_count <= 0) {
+        printf("登録済みの書籍がありません。\n");
+        return;
+    }
 
     printf("書籍IDを入力してください: ");
-    scanf("%s", input_book_id);
+    scanf("%19s", book_id);
 
-    for (int i = 0; i < book_count; i++) {
-        if (strcmp(library[i].book_id, input_book_id) == 0) {
-            book_index = i;
-            break;
-        }
+    target_index = find_book_index(book_id);
+    if (target_index < 0) {
+        printf("未登録の書籍IDです。先に書籍ID登録を行ってください。\n");
+        return;
     }
-
-    if (book_index == -1) {
-        printf("該当する書籍IDが存在しません。\n");
+    if (is_borrowed[target_index]) {
+        printf("この書籍はすでに貸出中です。\n");
         return;
     }
 
-    if (library[book_index].is_borrowed == 1) {
-        printf("この書籍は既に貸出中です。\n");
-        return;
-    }
+    get_date(rent_date);
+    get_due_date(due_date);
 
-    time_t t = time(NULL);
-    struct tm *now = localtime(&t);
-    char rent_date_str[20];
-    sprintf(rent_date_str, "%d/%02d/%02d", now->tm_year + 1900, now->tm_mon + 1, now->tm_mday);
+    is_borrowed[target_index] = 1;
+    strcpy(borrowed_rent_dates[target_index], rent_date);
+    strcpy(borrowed_due_dates[target_index], due_date);
 
-    time_t future = t + (7 * 24 * 60 * 60);
-    struct tm *due = localtime(&future);
-    char due_date_str[20];
-    sprintf(due_date_str, "%d/%02d/%02d", due->tm_year + 1900, due->tm_mon + 1, due->tm_mday);
-
-    printf("書籍名: %s\n", library[book_index].book_title);
-    printf("貸出料金: 500円\n");
-    printf("返却期限: %s まで（7泊8日）\n", due_date_str);
-    
-    int confirm;
-    printf("貸出を確定しますか？ (1: はい / 2: いいえ): ");
-    scanf("%d", &confirm);
-
-    if (confirm == 1) {
-        library[book_index].is_borrowed = 1;
-        strcpy(library[book_index].user_id, user_id);
-        strcpy(library[book_index].rent_date, rent_date_str);
-        strcpy(library[book_index].due_date, due_date_str);
-        
-        save_history("貸出", (char*)user_id, input_book_id, rent_date_str, due_date_str, "-");
-        
-        printf("貸出が完了しました。\n");
-    } else {
-        printf("貸出がキャンセルされました。\n");
-    }
+    save_history("貸出中", user_id, book_id, rent_date, due_date, "");
+    printf("書籍が貸し出されました。\n");
 }

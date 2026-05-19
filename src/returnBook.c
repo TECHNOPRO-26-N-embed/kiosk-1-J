@@ -1,29 +1,55 @@
 #include <stdio.h>
-#include <time.h>
-void returnBook() {
-    char book_id[50];
-    int due_year, due_month, due_day;
-    int late_days;
-    int late_fee = 0;
-    printf("\n=== 書籍返却 ===\n");
+#include <string.h>
+
+#define MAX_BOOKS 100
+
+extern int is_borrowed[MAX_BOOKS];
+extern char borrowed_rent_dates[MAX_BOOKS][20];
+extern char borrowed_due_dates[MAX_BOOKS][20];
+
+int find_book_index(char input_id[]);
+void get_date(char date[]);
+void save_history(
+    char status[],
+    char user_id[],
+    char book_id[],
+    char rent_date[],
+    char due_date[],
+    char return_date[]
+);
+
+void process_return(char user_id[]) {
+    char book_id[20];
+    char return_date[20];
+    int target_index;
+
     printf("書籍IDを入力してください: ");
-    scanf("%s", book_id);
-    printf("返却予定日を入力してください（例：2026 05 20）: ");
-    scanf("%d %d %d", &due_year, &due_month, &due_day);
-    time_t now = time(NULL);
-    struct tm due_date = {0};
-    due_date.tm_year = due_year - 1900;
-    due_date.tm_mon = due_month - 1;
-    due_date.tm_mday = due_day;
-    time_t due_time = mktime(&due_date);
-    late_days = (int)((now - due_time) / (60 * 60 * 24));
-    if (late_days > 0) {
-        late_fee = late_days * 100;
-        printf("返却期限を%d日超えています。\n", late_days);
-        printf("延滞料金は%d円です。\n", late_fee);
-    } else {
-        printf("延滞料金はありません。\n");
+    scanf("%19s", book_id);
+
+    target_index = find_book_index(book_id);
+    if (target_index < 0) {
+        printf("未登録の書籍IDです。\n");
+        return;
     }
-    printf("書籍ID: %s\n", book_id);
-    printf("返却処理が完了しました。\n");
+    if (!is_borrowed[target_index]) {
+        printf("この書籍は貸出中ではありません。\n");
+        return;
+    }
+
+    get_date(return_date);
+    is_borrowed[target_index] = 0;
+
+    save_history(
+        "返却済",
+        user_id,
+        book_id,
+        borrowed_rent_dates[target_index],
+        borrowed_due_dates[target_index],
+        return_date
+    );
+
+    borrowed_rent_dates[target_index][0] = '\0';
+    borrowed_due_dates[target_index][0] = '\0';
+
+    printf("書籍が返却されました。\n");
 }
