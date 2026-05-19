@@ -45,6 +45,12 @@ void process_checkout(char user_id[]) {
     strcpy(borrowed_rent_dates[target_index], rent_date);
     strcpy(borrowed_due_dates[target_index], due_date);
 
-    save_history("貸出中", user_id, book_id, rent_date, due_date, "");
+    printf("書籍名: %s\n", book_names[target_index]);
+    printf("価格: %s\n", book_prices[target_index]);
+
+    char full_book[150];
+    snprintf(full_book, sizeof(full_book), "%s %s %s",book_id, book_names[target_index], book_prices[target_index]);
+
+    save_history("貸出中", user_id, full_book, rent_date, due_date, "");
     printf("書籍が貸し出されました。\n");
 }
