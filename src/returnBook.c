@@ -38,7 +38,7 @@ void process_return(char user_id[]) {
     printf("価格: %s\n", book_prices[target_index]);
 
     char full_book[150];
-    snprintf(full_book, sizeof(full_book), "%s, %s, (%s)",book_id, book_names[target_index], book_prices[target_index]);
+    snprintf(full_book, sizeof(full_book), "%s %s %s",book_id, book_names[target_index], book_prices[target_index]);
     
     save_history(
         "返却済",
