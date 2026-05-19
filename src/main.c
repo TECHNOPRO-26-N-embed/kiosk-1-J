@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>   
-
-#define MAX_BOOKS 100
+#include "globals.h"    
 
 int is_borrowed[MAX_BOOKS] = {0};
 int book_count = 0;
@@ -10,8 +9,24 @@ char registered_book_ids[MAX_BOOKS][20];
 char borrowed_rent_dates[MAX_BOOKS][20];
 char borrowed_due_dates[MAX_BOOKS][20];
 
+void clear_input_buffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF) {
+    }
+}
+
 //login.c
 void check_user_id(char user_id[]);
+
+//findBookId.c
+int find_book_index(char input_id[]);
+void book_id_registration();
+
+//checkout.c
+void process_checkout(char user_id[]);
+
+//returnBook.c
+void process_return(char user_id[]);
 
 //history.c
 int calculate(char due_date[], char return_date[]);
@@ -19,48 +34,6 @@ void save_history(char status[],char user_id[],char book_id[],char rent_date[],c
 void load_history();
 void get_date(char date[]);
 void get_due_date(char due_date[]);
-
-void process_checkout(char user_id[]);
-void process_return(char user_id[]);
-
-void clear_input_buffer() {
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF) {
-    }
-}
-
-int find_book_index(char input_id[]) {
-    for (int i = 0; i < book_count; i++) {
-        if (strcmp(registered_book_ids[i], input_id) == 0) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-void book_id_registration() {
-    char input_id[20];
-
-    if (book_count >= MAX_BOOKS) {
-        printf("これ以上書籍を登録できません。\n");
-        return;
-    }
-
-    printf("書籍IDを入力してください: ");
-    scanf("%19s", input_id);
-
-    if (find_book_index(input_id) >= 0) {
-        printf("書籍ID %s は既に登録されています。\n", input_id);
-        return;
-    }
-
-    strcpy(registered_book_ids[book_count], input_id);
-    is_borrowed[book_count] = 0;
-    borrowed_rent_dates[book_count][0] = '\0';
-    borrowed_due_dates[book_count][0] = '\0';
-    book_count++;
-    printf("新規書籍ID登録しました。\n");
-}
 
 
 int main() {

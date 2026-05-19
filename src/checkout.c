@@ -1,13 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-
-#define MAX_BOOKS 100
-
-extern int is_borrowed[MAX_BOOKS];
-extern int book_count;
-extern char registered_book_ids[MAX_BOOKS][20];
-extern char borrowed_rent_dates[MAX_BOOKS][20];
-extern char borrowed_due_dates[MAX_BOOKS][20];
+#include "globals.h"
 
 int find_book_index(char input_id[]);
 void get_date(char date[]);
