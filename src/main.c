@@ -11,6 +11,9 @@ char book_prices[MAX_BOOKS][20];
 char borrowed_rent_dates[MAX_BOOKS][20];
 char borrowed_due_dates[MAX_BOOKS][20];
 
+// 各書籍ごとに借りたユーザーIDを管理
+char borrowed_user_ids[MAX_BOOKS][20] = { "" };
+
 void clear_input_buffer() {
     int c;
     while ((c = getchar()) != '\n' && c != EOF) {
@@ -22,7 +25,6 @@ void check_user_id(char user_id[]);
 
 //findBookId.c
 int find_book_index(char input_id[]);
-void book_id_registration();
 void load_book_ids();
 
 //checkout.c
@@ -55,7 +57,6 @@ int main() {
         printf("1. 書籍貸出\n");
         printf("2. 書籍返却\n");
         printf("3. 履歴\n");
-        printf("4. 書籍ID登録\n");
         printf("0. ログアウト\n");
         printf("------------------------------\n");
         printf("選択してください (0-4): ");
@@ -76,9 +77,6 @@ int main() {
         } else if(choice == 3) {
                 printf("履歴が選択されました。\n");
                 load_history();
-
-        } else if(choice == 4) {
-            book_id_registration();
 
         } else if(choice == 0) {
                 printf("ログアウトします。\n");

@@ -31,11 +31,16 @@ void process_return(char user_id[]) {
         return;
     }
 
+    if(strcmp(borrowed_user_ids[target_index], user_id) != 0){
+        printf("貸し出した本人のみ、返却できます。\n");
+        return;
+    }
+
     get_date(return_date);
     is_borrowed[target_index] = 0;
 
     printf("書籍名: %s\n", book_names[target_index]);
-    printf("価格: %s\n", book_prices[target_index]);
+    printf("価格: %s円\n", book_prices[target_index]);
 
     char full_book[150];
     snprintf(full_book, sizeof(full_book), "%s %s %s",book_id, book_names[target_index], book_prices[target_index]);
@@ -49,8 +54,10 @@ void process_return(char user_id[]) {
         return_date
     );
 
+
     borrowed_rent_dates[target_index][0] = '\0';
     borrowed_due_dates[target_index][0] = '\0';
+    borrowed_user_ids[target_index][0] = '\0';
 
     printf("書籍が返却されました。\n");
 }

@@ -11,4 +11,7 @@ extern char book_prices[MAX_BOOKS][20];
 extern char borrowed_rent_dates[MAX_BOOKS][20];
 extern char borrowed_due_dates[MAX_BOOKS][20];
 
+// 各書籍ごとに借りたユーザーIDを管理
+extern char borrowed_user_ids[MAX_BOOKS][20];
+
 #endif
