@@ -34,10 +34,16 @@ void process_return(char user_id[]) {
     get_date(return_date);
     is_borrowed[target_index] = 0;
 
+    printf("書籍名: %s\n", book_names[target_index]);
+    printf("価格: %s\n", book_prices[target_index]);
+
+    char full_book[150];
+    snprintf(full_book, sizeof(full_book), "%s, %s, (%s)",book_id, book_names[target_index], book_prices[target_index]);
+    
     save_history(
         "返却済",
         user_id,
-        book_id,
+        full_book,
         borrowed_rent_dates[target_index],
         borrowed_due_dates[target_index],
         return_date
