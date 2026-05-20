@@ -48,6 +48,8 @@ void save_history(const char* status, const char* user_id, const char* book_id, 
         printf("履歴ファイルのオープンに失敗しました。\n");
         return;
     }
+
+    // CSV形式で履歴を保存
     fprintf(
         file,
         "%s,%s,%s,%s,%s,%s\n",
@@ -69,6 +71,8 @@ void show_history() {
         printf("履歴ファイルのオープンに失敗しました。\n");
         return;
     }
+
+    // 履歴を表示
     printf("\n=== 履歴 ===\n");
     while (fgets(line, sizeof(line), file)) {
         printf("%s", line);

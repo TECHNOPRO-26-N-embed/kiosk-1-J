@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
+#include <string.h>
 #include "ai_return.h"
 
 void get_rent_date(char date[]);
@@ -13,10 +14,21 @@ void displayMenu() {
     printf("2. 書籍返却\n");
     printf("3. 在庫照会\n");
     printf("4. ログ参照\n");
+    printf("5. 会員管理\n");
     printf("0. ログアウト\n");
     printf("============================\n");
     printf("選択肢を入力してください: ");
 }
+
+// 3.在庫照会関数のプロトタイプ
+int get_book_stock(const char* book_id);
+
+// 4.履歴表示関数のプロトタイプ
+void show_history();
+
+// 5.必要な関数のプロトタイプ
+int get_user_point(const char* user_id);
+int add_user_point(const char* user_id, int points_to_add);
 
 int main() {
     setlocale(LC_ALL, "");
@@ -77,15 +89,39 @@ int main() {
             }
             case 3:
                 printf("【在庫照会画面】\n");
-                printf("書籍IDを入力してください: \n");
-                // 書籍ID入力処理
-                printf("在庫数を表示します...\n");
-                // 在庫数表示処理
+                printf("書籍IDを入力してください: ");
+                char stock_book_id[20];
+                scanf("%19s", stock_book_id);
+
+                // 在庫数を取得して表示する処理
+                int stock = get_book_stock(stock_book_id);
+
+                // 在庫数の表示
+                if (stock >= 0) {
+                    printf("在庫数: %d\n", stock);
+                } else if (stock == -2) {
+                    printf("書籍IDが存在しません。\n");
+                } else {
+                    printf("在庫情報の取得に失敗しました。\n");
+                }
                 break;
             case 4:
                 printf("【操作ログ画面】\n");
-                printf("ログ一覧を表示します...\n");
-                // ログ一覧表示処理
+                show_history();
+                break;
+            case 5:
+                printf("【ポイント・会員管理画面】\n");
+                char user_id[20];
+                printf("ユーザーIDを入力してください: ");
+                scanf("%19s", user_id);
+
+                // ユーザーのポイントを取得して表示する処理
+                int current_points = get_user_point(user_id);
+                if (current_points >= 0) {
+                    printf("現在のポイント: %d\n", current_points);
+                } else {
+                    printf("ユーザーIDが見つかりません。\n");
+                }
                 break;
             case 0:
                 printf("ログアウトします...\n");
