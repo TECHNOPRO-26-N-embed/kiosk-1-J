@@ -3,6 +3,7 @@
 #include <locale.h>
 #include <string.h>
 #include "ai_return.h"
+#include"ai_login.h"
 
 void get_rent_date(char date[]);
 
@@ -35,7 +36,18 @@ int main() {
     int choice;
     char user_id[32];
 
+     // ===== CSVロード =====
+    if (load_users_from_csv("users.csv") != 0) {
+        printf("ユーザーCSV読み込み失敗\n");
+        return -1;
+    }
+    
     printf("ログインしてください。\n");
+    // ログイン機能をここに追加
+    if (login() != 0) {
+    return -1;
+    }
+
     printf("ユーザーIDを入力してください: ");
     scanf("%31s", user_id);
 
