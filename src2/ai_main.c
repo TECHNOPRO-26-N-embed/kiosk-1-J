@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <string.h>
+#include "ai_return.h"
+
+void get_rent_date(char date[]);
 
 void displayMenu() {
     printf("============================\n");
@@ -30,9 +33,11 @@ int add_user_point(const char* user_id, int points_to_add);
 int main() {
     setlocale(LC_ALL, "");
     int choice;
+    char user_id[32];
 
     printf("ログインしてください。\n");
-    // ログイン機能をここに追加
+    printf("ユーザーIDを入力してください: ");
+    scanf("%31s", user_id);
 
     while (1) {
         displayMenu();
@@ -55,14 +60,33 @@ int main() {
                 printf("貸出を確定し、CSVに保存しました。\n");
                 break;
             case 2:
+            {
+                char book_id[32];
+                char today[16];
+                int late_fee = 0;
+                int result;
+
                 printf("【書籍返却画面】\n");
-                printf("書籍IDを入力してください: \n");
-                // 書籍ID入力処理
-                printf("返却可否を判定中...\n");
-                // 返却可否判定処理
-                printf("延滞料金を表示します...\n");
-                // 延滞料金表示処理
+                printf("書籍IDを入力してください: ");
+                scanf("%31s", book_id);
+
+                get_rent_date(today);
+                result = ai_return_book("history.csv", user_id, book_id, today, &late_fee);
+
+                if (result == AI_RETURN_OK) {
+                    printf("返却が完了しました。\n");
+                    printf("延滞料金: %d円\n", late_fee);
+                } else if (result == AI_RETURN_ERR_USER_MISMATCH) {
+                    printf("返却不可: 貸出した本人のみ返却できます。\n");
+                } else if (result == AI_RETURN_ERR_NOT_FOUND) {
+                    printf("返却不可: 貸出中の対象書籍が見つかりません。\n");
+                } else if (result == AI_RETURN_ERR_DATE) {
+                    printf("返却不可: 日付データが不正です。\n");
+                } else {
+                    printf("返却処理に失敗しました (code=%d)。\n", result);
+                }
                 break;
+            }
             case 3:
                 printf("【在庫照会画面】\n");
                 printf("書籍IDを入力してください: ");
