@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "globals.h"
 
 // ユーザーIDと書籍IDの整合性を確認する関数
 int check_user_id_for_return(const char* user_id, const char* book_id) {

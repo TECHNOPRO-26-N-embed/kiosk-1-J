@@ -1,12 +1,7 @@
-
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-
-int book_count = 0;
-char registered_book_ids[100][20];
-
-#define BOOK_ID_MAX_LEN 20
+#include "ai_globals.h"
 
 
 // ai_book.csvから書籍IDリストを読み込む
@@ -15,7 +10,7 @@ static void load_book_ids(void) {
     if (!file) return;
     char line[100];
     book_count = 0;
-    while (fgets(line, sizeof(line), file) && book_count < 100) {
+    while (fgets(line, sizeof(line), file) && book_count < MAX_BOOKS) {
         // 1行目のカンマ区切り1列目をIDとして格納
         char *token = strtok(line, ",\n");
         if (token) {
@@ -25,6 +20,15 @@ static void load_book_ids(void) {
         }
     }
     fclose(file);
+}
+
+int find_book_index(char input_id[]) {
+    for (int i = 0; i < book_count; i++) {
+        if (strcmp(registered_book_ids[i], input_id) == 0) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 // 入力バッファクリア（長い入力やバッファ残り対策）

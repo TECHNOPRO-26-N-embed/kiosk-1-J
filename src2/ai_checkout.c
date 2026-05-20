@@ -1,13 +1,60 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#include "globals.h"
+#include <stdlib.h>
+#include "ai_globals.h"
 
 int is_valid_book_id(const char* book_id);
+int get_book_stock(const char* book_id);
 int can_user_borrow_book(const char* user_id, const char* book_id);
 int calculate_rental_fee(const char* book_id);
 int save_checkout_log(const char* user_id, const char* book_id, const char* date, const char* action);
 int find_book_index(char input_id[]);
+
+int can_user_borrow_book(const char* user_id, const char* book_id) {
+    if (user_id == NULL || user_id[0] == '\0' || book_id == NULL || book_id[0] == '\0') {
+        return -1;
+    }
+    if (is_valid_book_id(book_id) != 0) {
+        return -2;
+    }
+    if (get_book_stock(book_id) <= 0) {
+        return -3;
+    }
+    return 0;
+}
+
+int calculate_rental_fee(const char* book_id) {
+    FILE* file = fopen("ai_books.csv", "r");
+    if (!file) {
+        return -6;
+    }
+
+    char line[256];
+    while (fgets(line, sizeof(line), file)) {
+        char csv_book_id[20];
+        char price_str[20];
+        if (sscanf(line, "%19[^,],%*[^,],%19[^,]", csv_book_id, price_str) == 2) {
+            if (strcmp(csv_book_id, book_id) == 0) {
+                fclose(file);
+                return atoi(price_str);
+            }
+        }
+    }
+
+    fclose(file);
+    return -2;
+}
+
+int save_checkout_log(const char* user_id, const char* book_id, const char* date, const char* action) {
+    FILE* file = fopen("ai_history.csv", "a");
+    if (!file) {
+        return -6;
+    }
+    fprintf(file, "%s,%s,%s,%s\n", action, user_id, book_id, date);
+    fclose(file);
+    return 0;
+}
 
 int checkout_book(const char* user_id, const char* book_id, const char* date) {
     if (user_id == NULL || user_id[0] == '\0' || book_id == NULL || book_id[0] == '\0' || date == NULL || date[0] == '\0') {

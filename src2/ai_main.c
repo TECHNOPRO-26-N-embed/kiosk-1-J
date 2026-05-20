@@ -2,10 +2,20 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <string.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 #include "ai_return.h"
-#include"ai_login.h"
+#include "ai_login.h"
+#include "ai_modules.h"
 
-void get_rent_date(char date[]);
+static void setup_console_encoding(void) {
+#ifdef _WIN32
+    SetConsoleOutputCP(932);
+    SetConsoleCP(932);
+#endif
+    setlocale(LC_ALL, "");
+}
 
 void displayMenu() {
     printf("============================\n");
@@ -21,29 +31,18 @@ void displayMenu() {
     printf("選択肢を入力してください: ");
 }
 
-// 3.在庫照会関数のプロトタイプ
-int get_book_stock(const char* book_id);
-
-// 4.履歴表示関数のプロトタイプ
-void show_history();
-
-// 5.必要な関数のプロトタイプ
-int get_user_point(const char* user_id);
-int add_user_point(const char* user_id, int points_to_add);
-
 int main() {
-    setlocale(LC_ALL, "");
+    setup_console_encoding();
     int choice;
     char user_id[32];
 
      // ===== CSVロード =====
-    if (load_users_from_csv("users.csv") != 0) {
+    if (load_users_from_csv("ai_users.csv") != 0) {
         printf("ユーザーCSV読み込み失敗\n");
         return -1;
     }
     
-    printf("ログインしてください。\n");
-    // ログイン機能をここに追加
+    // ===== ログイン =====
     if (login() != 0) {
     return -1;
     }
@@ -62,15 +61,24 @@ int main() {
 
         switch (choice) {
             case 1:
+            {
+                char book_id[32];
+                char today[16];
+                int result;
+
                 printf("【書籍貸出画面】\n");
-                printf("書籍IDを入力してください: \n");
-                // 書籍ID入力処理
-                printf("貸出可否を判定中...\n");
-                // 貸出可否判定処理
-                printf("料金計算と支払いを行います...\n");
-                // 料金計算・支払い処理
-                printf("貸出を確定し、CSVに保存しました。\n");
+                printf("書籍IDを入力してください: ");
+                scanf("%31s", book_id);
+
+                get_rent_date(today);
+                result = checkout_book(user_id, book_id, today);
+                if (result == 0) {
+                    printf("貸出が完了しました。\n");
+                } else {
+                    printf("貸出に失敗しました (code=%d)。\n", result);
+                }
                 break;
+            }
             case 2:
             {
                 char book_id[32];
@@ -122,19 +130,21 @@ int main() {
                 show_history();
                 break;
             case 5:
+            {
                 printf("【ポイント・会員管理画面】\n");
-                char user_id[20];
+                char member_user_id[20];
                 printf("ユーザーIDを入力してください: ");
-                scanf("%19s", user_id);
+                scanf("%19s", member_user_id);
 
                 // ユーザーのポイントを取得して表示する処理
-                int current_points = get_user_point(user_id);
+                int current_points = get_user_point(member_user_id);
                 if (current_points >= 0) {
                     printf("現在のポイント: %d\n", current_points);
                 } else {
                     printf("ユーザーIDが見つかりません。\n");
                 }
                 break;
+            }
             case 0:
                 printf("ログアウトします...\n");
                 // ログアウト処理
