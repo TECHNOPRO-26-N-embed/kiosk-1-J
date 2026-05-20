@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include"ai_login.h"
-
 #define USERS_CSV "users.csv"
 #define LINE_BUF_SIZE 256
 
